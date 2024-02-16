@@ -30,6 +30,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
       _value = value;
       if (mounted) {
         setState(() {});
+        print(value);
       }
     });
   }
