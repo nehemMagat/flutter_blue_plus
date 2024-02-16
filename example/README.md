@@ -14,3 +14,27 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+## GUIDE
+
+pinky 
+ring
+mid
+index
+thumb
+accelx
+accely
+accelz
+gyrox
+gyroy
+gyroz
+
+1 array (44)
+1st 4 pinky
+1st 4 ring
+1st mid
+as follows.....
+
+
+save 11 values in a single array then reverse list then save as hexadecimal, then convert from hexa to float
