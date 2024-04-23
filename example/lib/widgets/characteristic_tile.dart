@@ -33,6 +33,12 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
         print(value);
       }
     });
+
+    // Subscribe after 10 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      print("Now Subscribed!");
+      onSubscribePressed();
+    });
   }
 
   @override

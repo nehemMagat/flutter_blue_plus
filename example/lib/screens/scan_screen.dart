@@ -77,13 +77,91 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   void onConnectPressed(BluetoothDevice device) {
-    device.connectAndUpdateStream().catchError((e) {
-      Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
-    });
+  device.connectAndUpdateStream().then((_) {
+    print('Successfully connected to device with MAC address: ${device.remoteId}');
+  }).catchError((e) {
+    Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+  });
+
+  // Find the second device by its MAC address
+  final String secondDeviceMac = "DC:DA:0C:16:C8:AD"; // Replace with the actual MAC address of the second device
+  final ScanResult secondDeviceResult = _scanResults.firstWhere(
+    (result) => result.device.remoteId == secondDeviceMac,
+    orElse: () => ScanResult(
+      device: BluetoothDevice(remoteId: DeviceIdentifier(secondDeviceMac)),
+      advertisementData: AdvertisementData(
+        advName: '',
+        txPowerLevel: 0,
+        appearance: 0,
+        connectable: false,
+        manufacturerData: {},
+        serviceData: {},
+        serviceUuids: [],
+      ),
+      rssi: 0,
+      timeStamp: DateTime.now(),
+    ),
+  );
+
+  secondDeviceResult.device.connectAndUpdateStream().then((_) {
+    print('Successfully connected to device with MAC address: $secondDeviceMac');
     MaterialPageRoute route = MaterialPageRoute(
-        builder: (context) => DeviceScreen(device: device), settings: RouteSettings(name: '/DeviceScreen'));
+      builder: (context) => DeviceScreen(devices: [device, secondDeviceResult.device]),
+      settings: RouteSettings(name: '/DeviceScreen'),
+    );
     Navigator.of(context).push(route);
-  }
+  }).catchError((e) {
+    Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+  });
+}
+
+
+//   void onConnectPressed(BluetoothDevice device) { initial function for connecting device
+//   device.connectAndUpdateStream().then((_) {
+//     print('Successfully connected to device with MAC address: ${device.remoteId}');
+//   }).catchError((e) {
+//     Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+//   });
+
+//   final macAddresses = ["84:FC:E6:6A:C0:BD", "DC:DA:0C:16:C8:AD"];
+  
+//    Connect to the second ESP32 device
+//   var secondDevice = _scanResults.firstWhere(
+//     (result) => result.device.remoteId != device.remoteId,
+//     orElse: () => ScanResult(
+//       device: BluetoothDevice(remoteId: DeviceIdentifier('')),
+//       advertisementData: AdvertisementData(
+//         advName: '',
+//         txPowerLevel: 0,
+//         appearance: 0,
+//         connectable: false,
+//         manufacturerData: {},
+//         serviceData: {},
+//         serviceUuids: [],
+//       ),
+//       rssi: 0,
+//       timeStamp: DateTime.now(),
+//     ),
+//   );
+
+//   if (secondDevice.device.remoteId != DeviceIdentifier('')) {
+//   secondDevice.device.connectAndUpdateStream().then((_) {
+//     print('Successfully connected to device with MAC address: ${secondDevice.device.remoteId}');
+//   }).catchError((e) {
+//     Snackbar.show(ABC.c, prettyException("Connect Error:", e), success: false);
+//   });
+// }
+
+//   MaterialPageRoute route = MaterialPageRoute(
+//     builder: (context) => DeviceScreen(devices: [device, secondDevice.device]), // new method of rerouting, previously kase one device lang, now list na bali 2 device
+//     settings: RouteSettings(name: '/DeviceScreen'),
+//   );
+//   Navigator.of(context).push(route);
+// }
+
+
+
+
 
   Future onRefresh() {
     if (_isScanning == false) {
@@ -114,7 +192,7 @@ class _ScanScreenState extends State<ScanScreen> {
             device: d,
             onOpen: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DeviceScreen(device: d),
+                builder: (context) => DeviceScreen(devices: [d]), // new method of rerouting, previously kase one device lang, now list na
                 settings: RouteSettings(name: '/DeviceScreen'),
               ),
             ),
